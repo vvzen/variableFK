@@ -2,37 +2,38 @@ import functools
 import maya.cmds as mc
 import pymel.core as pmc
 
-from PySide import QtCore as qc
-from PySide import QtGui as qg
-from shiboken import wrapInstance
+from PySide2 import QtCore as qtc
+from PySide2 import QtGui as qtg
+from PySide2 import QtWidgets as qtw
 
 import maya.OpenMayaUI as omui
+
+from shiboken2 import wrapInstance
 
 def maya_main_window():
     '''
     Return the Maya main window as a Python object
     '''
-    main_window_ptr = omui.MQtUtil.mainWindow()
-    return wrapInstance(long(main_window_ptr), qg.QWidget)
-    
+    main_window_pointer = omui.MQtUtil.mainWindow()
+    return wrapInstance(long(main_window_pointer), qtw.QWidget)
 
-class VFK_UI(qg.QDialog):
+class VFK_UI(qtw.QDialog):
     
     def __init__(self, parent=maya_main_window()):
         super(VFK_UI, self).__init__(parent)
     
     def format_widget(self, lbl_text = 'Label text', sub_text = 'Default value'):
-        lbl = qg.QLabel(lbl_text)
-        le = qg.QLineEdit()
+        lbl = qtw.QLabel(lbl_text)
+        le = qtw.QLineEdit()
         le.setMinimumSize(75,20)
         le.setMaximumSize(75,20)
-        sub = qg.QLabel(sub_text)
+        sub = qtw.QLabel(sub_text)
         sub.setStyleSheet('color: rgb(140,140,140)')
         
-        layoutA = qg.QVBoxLayout()
+        layoutA = qtw.QVBoxLayout()
         layoutA.setContentsMargins(0,0,0,0)        
         layoutA.setSpacing(0)
-        layoutB = qg.QHBoxLayout()
+        layoutB = qtw.QHBoxLayout()
         layoutB.setContentsMargins(0,0,0,0)
         layoutB.setSpacing(0)     
         layoutB.addWidget(lbl)
@@ -40,7 +41,7 @@ class VFK_UI(qg.QDialog):
         layoutA.addLayout(layoutB)
         layoutA.addWidget(sub)
 
-        widget = qg.QWidget()
+        widget = qtw.QWidget()
         widget.setLayout(layoutA)
 
         return_tuple = (widget, le)
@@ -51,7 +52,8 @@ class VFK_UI(qg.QDialog):
         pmc.undoInfo(openChunk=True)
 
         self.setWindowTitle('VFK Rig Creator')
-        self.setWindowFlags(qc.Qt.Tool)
+        self.setWindowFlags(qtc.Qt.Tool)
+        
         self.setMinimumSize(300, 400)
         self.setMaximumWidth(300)
         
@@ -62,10 +64,10 @@ class VFK_UI(qg.QDialog):
         pmc.undoInfo(closeChunk=True)
         
     def create_controls(self):
-        self.header_lbl = qg.QLabel('Select start joint, then end joint')
-        self.credit_lbl = qg.QLabel('Automates creation of VFK rig after Jeff Brodsky')
+        self.header_lbl = qtw.QLabel('Select start joint, then end joint')
+        self.credit_lbl = qtw.QLabel('Automates creation of VFK rig after Jeff Brodsky')
         self.credit_lbl.setStyleSheet('color: rgb(140,140,140)')
-        self.link_lbl = qg.QLabel('https://vimeo.com/49353110')
+        self.link_lbl = qtw.QLabel('https://vimeo.com/49353110')
         self.link_lbl.setStyleSheet('color: rgb(140,140,140)')
         
         self.name_widget, self.name_le = self.format_widget(lbl_text = 'Name prefix', 
@@ -88,32 +90,32 @@ class VFK_UI(qg.QDialog):
         self.control_grp_prefix_widget, self.control_grp_prefix_le = self.format_widget(lbl_text = 'Control group prefix', 
                                                                                           sub_text = 'Default = "OFF_CTRL_vfk_"')
         # Bone translate axis widget
-        self.bone_trans_axis_widget = qg.QWidget()
-        bone_trans_axis_lbl = qg.QLabel('Set bone main axis')
-        self.bone_trans_axis_radX = qg.QRadioButton('x')
-        self.bone_trans_axis_radY = qg.QRadioButton('y')
-        self.bone_trans_axis_radZ = qg.QRadioButton('z')
+        self.bone_trans_axis_widget = qtw.QWidget()
+        bone_trans_axis_lbl = qtw.QLabel('Set bone main axis')
+        self.bone_trans_axis_radX = qtw.QRadioButton('x')
+        self.bone_trans_axis_radY = qtw.QRadioButton('y')
+        self.bone_trans_axis_radZ = qtw.QRadioButton('z')
         self.bone_trans_axis_radX.setChecked(True)
         bone_trans_axis_lbl.setMaximumHeight(20)
         self.bone_trans_axis_radX.setMaximumHeight(20)
         self.bone_trans_axis_radY.setMaximumHeight(20)
         self.bone_trans_axis_radZ.setMaximumHeight(20)
         
-        bone_trans_axis_sub = qg.QLabel('Default = x')
+        bone_trans_axis_sub = qtw.QLabel('Default = x')
         bone_trans_axis_sub.setStyleSheet('color: rgb(140,140,140)')
         
-        bone_trans_axis_layoutA = qg.QVBoxLayout()
+        bone_trans_axis_layoutA = qtw.QVBoxLayout()
         bone_trans_axis_layoutA.setContentsMargins(0,0,0,0)
         bone_trans_axis_layoutA.setSpacing(0)
 
-        bone_trans_axis_layoutB = qg.QHBoxLayout()
+        bone_trans_axis_layoutB = qtw.QHBoxLayout()
         bone_trans_axis_layoutB.setContentsMargins(0,0,0,0)
         bone_trans_axis_layoutB.setSpacing(0)
         
-        bone_trans_axis_layoutC = qg.QHBoxLayout()
+        bone_trans_axis_layoutC = qtw.QHBoxLayout()
         bone_trans_axis_layoutC.setContentsMargins(0,0,0,0)               
         bone_trans_axis_layoutC.setSpacing(10)
-        bone_trans_axis_layoutC.setAlignment(qc.Qt.AlignRight)
+        bone_trans_axis_layoutC.setAlignment(qtc.Qt.AlignRight)
         
 
         bone_trans_axis_layoutB.addWidget(bone_trans_axis_lbl)
@@ -126,37 +128,37 @@ class VFK_UI(qg.QDialog):
 
         bone_trans_axis_layoutA.addLayout(bone_trans_axis_layoutB)
         bone_trans_axis_layoutA.addWidget(bone_trans_axis_sub)
-        bone_trans_axis_sub.setAlignment(qc.Qt.AlignTop)
+        bone_trans_axis_sub.setAlignment(qtc.Qt.AlignTop)
 
         self.bone_trans_axis_widget.setLayout(bone_trans_axis_layoutA)
         
         # Bone up axis widget
-        self.bone_up_axis_widget = qg.QWidget()
-        bone_up_axis_lbl = qg.QLabel('Set bone up axis')
-        self.bone_up_axis_radX = qg.QRadioButton('x')
-        self.bone_up_axis_radY = qg.QRadioButton('y')
-        self.bone_up_axis_radZ = qg.QRadioButton('z')
+        self.bone_up_axis_widget = qtw.QWidget()
+        bone_up_axis_lbl = qtw.QLabel('Set bone up axis')
+        self.bone_up_axis_radX = qtw.QRadioButton('x')
+        self.bone_up_axis_radY = qtw.QRadioButton('y')
+        self.bone_up_axis_radZ = qtw.QRadioButton('z')
         self.bone_up_axis_radZ.setChecked(True)
         bone_up_axis_lbl.setMaximumHeight(20)
         self.bone_up_axis_radX.setMaximumHeight(20)
         self.bone_up_axis_radY.setMaximumHeight(20)
         self.bone_up_axis_radZ.setMaximumHeight(20)
         
-        bone_up_axis_sub = qg.QLabel('Default = z')
+        bone_up_axis_sub = qtw.QLabel('Default = z')
         bone_up_axis_sub.setStyleSheet('color: rgb(140,140,140)')
         
-        bone_up_axis_layoutA = qg.QVBoxLayout()
+        bone_up_axis_layoutA = qtw.QVBoxLayout()
         bone_up_axis_layoutA.setContentsMargins(0,0,0,0)
         bone_up_axis_layoutA.setSpacing(0)
 
-        bone_up_axis_layoutB = qg.QHBoxLayout()
+        bone_up_axis_layoutB = qtw.QHBoxLayout()
         bone_up_axis_layoutB.setContentsMargins(0,0,0,0)
         bone_up_axis_layoutB.setSpacing(0)
         
-        bone_up_axis_layoutC = qg.QHBoxLayout()
+        bone_up_axis_layoutC = qtw.QHBoxLayout()
         bone_up_axis_layoutC.setContentsMargins(0,0,0,0)               
         bone_up_axis_layoutC.setSpacing(10)
-        bone_up_axis_layoutC.setAlignment(qc.Qt.AlignRight)
+        bone_up_axis_layoutC.setAlignment(qtc.Qt.AlignRight)
         
 
         bone_up_axis_layoutB.addWidget(bone_up_axis_lbl)
@@ -169,12 +171,12 @@ class VFK_UI(qg.QDialog):
 
         bone_up_axis_layoutA.addLayout(bone_up_axis_layoutB)
         bone_up_axis_layoutA.addWidget(bone_up_axis_sub)
-        bone_up_axis_sub.setAlignment(qc.Qt.AlignTop)
+        bone_up_axis_sub.setAlignment(qtc.Qt.AlignTop)
 
         self.bone_up_axis_widget.setLayout(bone_up_axis_layoutA)        
 
         # Create VFK button
-        self.create_vfk_btn = qg.QPushButton('Create VFK Rig')
+        self.create_vfk_btn = qtw.QPushButton('Create VFK Rig')
         self.create_vfk_btn.setMaximumSize(200,100)
         #btn_grad = qg.QLinearGradient(x1:0, y1:0, x2:1, y2:0, stop: 0 red, stop: 1 blue)
         #image_path = pmc.internalVar(upd=True) + 'icons/jiii_buttonBG.png'
@@ -183,21 +185,21 @@ class VFK_UI(qg.QDialog):
         self.create_vfk_btn.setStyleSheet('border: solid black 1px;'
                                           'background-color: QLinearGradient(x1:0, y1:0, x2:1, y2:0, stop: 0 rgb(255,0,255), stop: 1 rgb(0,255,255)')
         
-        self.close_on_create_chk = qg.QCheckBox('Close window on rig creation')
-        self.close_on_create_chk.setCheckState(qc.Qt.Checked)
+        self.close_on_create_chk = qtw.QCheckBox('Close window on rig creation')
+        self.close_on_create_chk.setCheckState(qtc.Qt.Checked)
         
     def create_layout(self):
-        tab_widget = qg.QTabWidget()
-        basic_tab_page = qg.QWidget()
-        advanced_tab_page = qg.QWidget()
-        basic_layout = qg.QVBoxLayout(basic_tab_page)
-        advanced_layout = qg.QVBoxLayout(advanced_tab_page)
-        btn_layout = qg.QHBoxLayout()
+        tab_widget = qtw.QTabWidget()
+        basic_tab_page = qtw.QWidget()
+        advanced_tab_page = qtw.QWidget()
+        basic_layout = qtw.QVBoxLayout(basic_tab_page)
+        advanced_layout = qtw.QVBoxLayout(advanced_tab_page)
+        btn_layout = qtw.QHBoxLayout()
 
         basic_layout.addWidget(self.name_widget)
         basic_layout.addWidget(self.joints_widget)
         basic_layout.addWidget(self.controls_widget)
-        basic_layout.setAlignment(qc.Qt.AlignTop)
+        basic_layout.setAlignment(qtc.Qt.AlignTop)
         
         advanced_layout.addWidget(self.control_radius_widget)
         advanced_layout.addWidget(self.joint_radius_widget)
@@ -207,7 +209,7 @@ class VFK_UI(qg.QDialog):
         advanced_layout.addWidget(self.control_grp_prefix_widget)
         advanced_layout.addWidget(self.bone_trans_axis_widget)
         advanced_layout.addWidget(self.bone_up_axis_widget)
-        advanced_layout.setAlignment(qc.Qt.AlignTop)
+        advanced_layout.setAlignment(qtc.Qt.AlignTop)
 
         tab_widget.addTab(basic_tab_page, 'Basic')
         tab_widget.addTab(advanced_tab_page, 'Advanced')
@@ -215,7 +217,7 @@ class VFK_UI(qg.QDialog):
         btn_layout.addWidget(self.create_vfk_btn)
         #btn_layout.addWidget(self.close_on_create_chk)
                 
-        main_layout = qg.QVBoxLayout()
+        main_layout = qtw.QVBoxLayout()
         main_layout.setContentsMargins(10,10,10,10)
 
         main_layout.addWidget(self.header_lbl)
@@ -224,7 +226,7 @@ class VFK_UI(qg.QDialog):
         main_layout.addWidget(tab_widget)
         main_layout.addLayout(btn_layout)
                         
-        main_layout.setAlignment(qc.Qt.AlignTop)
+        main_layout.setAlignment(qtc.Qt.AlignTop)
         self.setLayout(main_layout)
     
     def create_connections(self):
@@ -665,6 +667,7 @@ class VFK_UI(qg.QDialog):
 
 if __name__ == '__main__':
     try:
+        vfk_ui.close()
         vfk_ui.deleteLater()
     except:
         pass
